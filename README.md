@@ -23,8 +23,8 @@ To ensure data quality for machine learning modelling, the following steps were 
 - Older individuals tend to burn slightly more calories during exercise, with males generally burning
 
 # Feature Selection
-X = Age, Height, Weight, Duration, Heart_Rate, Body_Temp
-y = Calories
+- X = Age, Height, Weight, Duration, Heart_Rate, Body_Temp
+- y = Calories
 
 # Model Selection, Training 
 Ridge regression was selected as the primary predictive model for this project due to its ability to handle multicollinearity among input features (Weight and Height (0.96) and prevent overfitting through L2 regularisation. 
