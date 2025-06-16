@@ -4,18 +4,31 @@ The dataset, sourced from Kaggle's [Calories Burnt Prediction](https://www.kaggl
 
 # Data Cleaning & Preprocessing
 To ensure data quality for machine learning modelling, the following steps were undertaken;
-- checked for missing/null values: df.isnull().sum()
-- checked and removed duplicates: df = df.drop_duplicates(keep = 'first')
+- checked for missing/null values:
+  ``` python
+  df.isnull().sum()
+  ```
+- checked and removed duplicates:
+  ```python
+  df = df.drop_duplicates(keep = 'first')
+  ```
 - categorical variable 'Gender' was transformed into a numerical column 'Male' where male = 1 and female = 0 using
    ```python
    encoded_gender = pd.get_dummies(df['Gender'], drop_first=True, dtype = 'int')
    df = pd.concat([df, encoded_gender], axis = 1).drop(['Gender', 'Age_Group'], axis = 1)
+   ```
 - train test split
   ```python
   from sklearn.model_selection import train_test_split
-  X_train, X_test, y_train, y_test = train_test_split(X, y, test_size = 0.3, random_state = 101```
-  
+  X_train, X_test, y_train, y_test = train_test_split(X, y, test_size = 0.3, random_state = 101
+  ```
 - standard scaling
+  ```python
+   from sklearn.preprocessing import StandardScaler
+  sc = StandardScaler()
+  X_train = sc.fit_transform(X_train)
+  X_test = sc.transform(X_test)
+  ```
 
 # Insights from Exploratory Data Analysis
 - There are 7553 female to 7447 male in the dataset
@@ -37,12 +50,25 @@ Given the continuous nature of the target variable (calories burned), Ridge regr
 ```
 
 # Model Evaluation
-The Ridge regression model demonstrated strong predictive accuracy on the test dataset. The Root Mean Squared Error (RMSE) was approximately 11.35, indicating a low average prediction error in calorie estimates. Additionally, the model achieved a high R² Score of 0.967, suggesting that the input features explain over 96% of the variance in calorie expenditure. These metrics confirm that Ridge regression is well-suited for this task, offering both accuracy and generalizability.
+The Ridge regression model demonstrated strong predictive accuracy on the test dataset. The **Root Mean Squared Error (RMSE) was approximately 11.35**, indicating a low average prediction error in calorie estimates. Additionally, the model achieved a high **R² Score of 0.967**, suggesting that the input features explain over 96% of the variance in calorie expenditure. These metrics confirm that Ridge regression is well-suited for this task, offering both accuracy and generalizability.
 
 # Hyperparameter Tuning with GridSearchCV
 Ridge regression parameters were optimised using GridSearchCV with 5-fold cross-validation. 
-The best configuration:
-  with alpha = 0.1 and solver = 'sag'—produced a cross-validated RMSE of approximately 11.30, enhancing the model’s predictive accuracy and generalisation.
+```python
+param_grid = {
+'alpha': [0.01, 0.1, 1.0, 10.0, 100.0],
+'solver': ['auto', 'cholesky', 'lsqr', 'sag', 'saga']
+}
+
+grid_model = GridSearchCV(
+estimator = base_model,
+param_grid = param_grid,
+cv = 5,
+scoring = 'neg_root_mean_squared_error',
+n_jobs = -1
+)
+```
+The best configuration: alpha = 0.1 and solver = 'sag'—produced a cross-validated RMSE of approximately 11.30, enhancing the model’s predictive accuracy and generalisation.
 
 # Feature Importance
 The model identified *Duration* and *Heart Rate* as the strongest predictors of calorie expenditure. 
