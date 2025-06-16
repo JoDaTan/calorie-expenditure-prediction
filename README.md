@@ -18,6 +18,7 @@ To ensure data quality for machine learning modelling, the following steps were 
 - standard scaling
 
 # Insights from Exploratory Data Analysis
+- There are 7553 female to 7447 male in the dataset
 - Duration is the primary driver of calorie expenditure across both genders.
 - There’s no significant difference in how long males and females exercise, but the calories burned differ slightly, possibly due to intensity or physical differences.
 - Older individuals tend to burn slightly more calories during exercise, with males generally burning
