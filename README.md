@@ -1,89 +1,81 @@
-# calorie-expenditure-prediction
-This project aims to build a machine learning model to predict an individual’s calorie expenditure based on physiological and activity-related features. 
-The dataset, sourced from Kaggle's [Calories Burnt Prediction](https://www.kaggle.com/datasets/ruchikakumbhar/calories-burnt-prediction/data) collection, provides the foundation for training a predictive system that can support personalised fitness insights and healthier lifestyle decisions.
+# Calorie Expenditure Prediction
+This project aims to predict the number of calories burned during a workout session based on physiological and activity-related features such as: Age, Height, Weight, Duration, Heart Rate and Body Temperature. 
+<br>It uses a machine learning model to understand which factors most influence calorie expenditure and determine the best performing  predictive model for fitness planning and performance tracking.</br>
+<br>The dataset, sourced from Kaggle's [Calories Burnt Prediction](https://www.kaggle.com/datasets/ruchikakumbhar/calories-burnt-prediction/data) collection, provides the foundation for training a predictive system that can support personalised fitness insights and healthier lifestyle decisions.</br>
 
-# Data Cleaning & Preprocessing
-To ensure data quality for machine learning modelling, the following steps were undertaken;
-- checked for missing/null values:
-  ``` python
-  df.isnull().sum()
-  ```
-- checked and removed duplicates:
-  ```python
-  df = df.drop_duplicates(keep = 'first')
-  ```
-- categorical variable 'Gender' was transformed into a numerical column 'Male' where male = 1 and female = 0 using
-   ```python
-   encoded_gender = pd.get_dummies(df['Gender'], drop_first=True, dtype = 'int')
-   df = pd.concat([df, encoded_gender], axis = 1).drop(['Gender', 'Age_Group'], axis = 1)
-   ```
-- train test split
-  ```python
-  from sklearn.model_selection import train_test_split
-  X_train, X_test, y_train, y_test = train_test_split(X, y, test_size = 0.3, random_state = 101
-  ```
-- standard scaling
-  ```python
-  from sklearn.preprocessing import StandardScaler
-  sc = StandardScaler()
-  X_train = sc.fit_transform(X_train)
-  X_test = sc.transform(X_test)
-  ```
+# Dataset Description
+ - Shape: 15000 rows, 7 columns
+ - Features:
+   - User_ID: unique identifier for each individual
+   - Gender: Male/Female
+   - Age: individual's age (20 - 79 years)
+   - Height: cm
+   - Weight: kg
+   - Duration: minutes
+   - Heart_Rate: average heart rate during workout
+   - Body_Temp: body temperature during workout
+  - Target
+    - Calories
 
 # Insights from Exploratory Data Analysis
-- There are 7553 female to 7447 male in the dataset
-- Duration is the primary driver of calorie expenditure across both genders.
-- There’s no significant difference in how long males and females exercise, but the calories burned differ slightly, possibly due to intensity or physical differences.
-- Older individuals tend to burn slightly more calories during exercise, with males generally burning
+- The dataset contains 15,000 workout sessions from adults aged 20 to 79, with participants averaging 174 cm in height, 75 kg in weight, and a heart rate of about 96 bpm; workouts last around 15.5 minutes on average, resulting in approximately 90 calories burned per session, with some variability and a few extreme height and weight values suggesting potential outliers.
+- Heart rate, duration and body temperature show strong positive correlation with calories burned.
+- Weight and Height show strong correlation (0.958)
+- Males are slightly taller and heavier than females.
 
-# Feature Selection
-- X = Age, Height, Weight, Duration, Heart_Rate, Body_Temp
-- y = Calories
+# Feature Engineering
+Due to strong multicollinearity between Height and Weight (0.958), I created the composite feature `bmi = (Weight / Height (m) ** 2)`
 
-# Model Selection, Training 
-Ridge regression was selected as the primary predictive model for this project due to its ability to handle multicollinearity among input features (Weight and Height (0.96) and prevent overfitting through L2 regularisation. 
-Given the continuous nature of the target variable (calories burned), Ridge regression offers a balanced approach that enhances model generalisation while maintaining interpretability. 
-```python
-  from sklearn.linear_model import Ridge
-  base_model = Ridge()
-  base_model.fit(X_train, y_train)
-```
+# Feature Selection & Pre-modelling Data Prep
+  - Selected Features:
+      -  X = Age, Gender, Duration, Heart_Rate, Body_Temp, bmi
+      -  y = Calories
+  - Drop identifier `User_ID`
+  - OneHotEncoding `Gender` as numeric
+  - Standscale the numeric features; Age, Duration, Heart_Rate, Body_Temp, bmi
 
-# Model Evaluation
-The Ridge regression model demonstrated strong predictive accuracy on the test dataset. The **Root Mean Squared Error (RMSE) was approximately 11.35**, indicating a low average prediction error in calorie estimates. Additionally, the model achieved a high **R² Score of 0.967**, suggesting that the input features explain over 96% of the variance in calorie expenditure. These metrics confirm that Ridge regression is well-suited for this task, offering both accuracy and generalizability.
+# Modelling - Training, Evaluation and Selection
+To determine the best predictive algorithm, multiple regression models were trained:
 
-# Hyperparameter Tuning with GridSearchCV
-Ridge regression parameters were optimised using GridSearchCV with 5-fold cross-validation. 
-```python
-param_grid = {
-'alpha': [0.01, 0.1, 1.0, 10.0, 100.0],
-'solver': ['auto', 'cholesky', 'lsqr', 'sag', 'saga']
-}
+  | Model                  | Metrics (MAE - RMSE - R²) | Remark                                     |
+  | ---------------------- | ------------------------- | ------------------------------------------ |
+  | **Ridge Regression**   | 8.460 - 11.597 - 0.966    | Model with regularization                             |
+  | **Linear Regression**  | 8.460 - 11.597 - 0.966    | Baseline model |
+  | **Decision Tree**      | 3.964 - 6.003 - 0.991     | Improved accuracy with slight overfitting  |
+  | **K Nearest Neighbor** | 4.237 - 5.842 - 0.991     | Improved accuracy                          |
+  | **Gradient Boosting**  | 3.228 - 4.474 - 0.995     | Best generalizing model                    |
+  | **Random Forest**      | 2.562 - 3.856 - 0.996     | Best predictive accuracy                   |
 
-grid_model = GridSearchCV(
-estimator = base_model,
-param_grid = param_grid,
-cv = 5,
-scoring = 'neg_root_mean_squared_error',
-n_jobs = -1
-)
-```
-The best configuration: alpha = 0.1 and solver = 'sag'—produced a cross-validated RMSE of approximately 11.30, enhancing the model’s predictive accuracy and generalisation.
+**Selected Models:** Random Forest Regressor and Gradient Boosting
 
-# Feature Importance
-The model identified *Duration* and *Heart Rate* as the strongest predictors of calorie expenditure. 
-Moderate contributions came from *Age* and *Weight*, while features like *Gender*, *Height*, and *Body Temperature* had minimal or negative influence.
+# Hyperparameter Tuning:
+To further improve model performance, I applied GridSearchCV to the top two models: Random Forest and Gradient Boosting.
+| Model                 | Best Parameters                                                                                                                                         |        MAE |      RMSE |        R² |
+| --------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------- | --------: | --------: | --------: |
+| **Random Forest**     | `{'max_depth': 20, 'max_features': 'sqrt', 'min_samples_leaf': 1, 'min_samples_split': 2, 'n_estimators': 300}`                                         |     2.835 |     4.413 |     0.995 |
+| **Gradient Boosting** | `{'learning_rate': 0.05, 'max_depth': 5, 'max_features': 'sqrt', 'min_samples_leaf': 1, 'min_samples_split': 2, 'n_estimators': 300, 'subsample': 0.8}` | **2.491** | **3.500** | **0.997** |
 
-| Feature       | Coefficient |
-|---------------|-------------|
-| Duration      | 55.40       |
-| Heart_Rate    | 19.10       |
-| Age           | 8.50        |
-| Weight        | 4.36        |
-| Male          | -0.58       |
-| Height        | -2.56       |
-| Body_Temp     | -13.25      |
+Gradient Boosting achieved lower MAE and RMSE values with better generalisation, demonstrating superior performance and robustness.
+**Final Model Selection:** Tuned Gradient Boosting
 
-# Conclusion
-This project successfully demonstrated that Ridge regression, especially when fine-tuned using GridSearchCV, can accurately predict calorie expenditure from physiological and activity-related data. 
-Key findings emphasised the dominant role of Duration and Heart Rate in estimating energy burn, offering practical insight for developing personalised health and fitness applications
+# Interpretation
+To interpret how features influenced calorie predictions, two complementary explainability methods were applied — Permutation Importance and SHAP (SHapley Additive Explanations).
+These methods were used on the final Gradient Boosting model, the best-performing estimator after hyperparameter tuning.
+
+## Permutation Importance
+| Feature        | Importance |
+| -------------- | ---------: |
+| **Duration**   | **1.0731** |
+| **Heart_Rate** | **0.1691** |
+| **Age**        |     0.0563 |
+| **Gender**     |     0.0113 |
+| **BMI**        |     0.0016 |
+| **Body_Temp**  |    0.00005 |
+    
+**Interpretation:** The permutation importance analysis from the tuned Gradient Boosting model reveals that Workout Duration is by far the most influential factor determining calorie expenditure, followed by Heart Rate. Together, these two variables account for nearly all the model’s explanatory power.
+Physiological attributes such as BMI, Age, and Gender contribute marginally, indicating that workout behavior and exertion level dominate over body characteristics in calorie prediction.
+This is also consistent with the result from SHAP analysis.
+
+# Future Improvements
+- Deploy web app for real-time calorie prediction using user input
+- try out polynomial regression or Neural Networks for complex interactions.
