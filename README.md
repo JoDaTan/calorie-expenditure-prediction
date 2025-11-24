@@ -1,5 +1,7 @@
 Deployed on Render
-🔗 - [Calorie Expenditure Predictor App](https://calorie-expenditure-predictor-app.onrender.com/)
+🔗 <a href="https://calorie-expenditure-predictor-app.onrender.com/" target="_blank" rel="noopener noreferrer">
+Calorie Expenditure Predictor App
+</a>
 
 # Calorie Expenditure Prediction
 This project predicts the number of calories burned during a workout session using physiological and activity-related features such as Age, Height, Weight, Duration, Heart Rate, and Body Temperature.
