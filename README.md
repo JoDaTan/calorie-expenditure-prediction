@@ -1,9 +1,14 @@
+Deployed on Render
+🔗 - [Calorie Expenditure Predictor App](https://calorie-expenditure-predictor-app.onrender.com/)
+
 # Calorie Expenditure Prediction
 This project predicts the number of calories burned during a workout session using physiological and activity-related features such as Age, Height, Weight, Duration, Heart Rate, and Body Temperature.
 
 By leveraging machine learning models, the system identifies which factors most strongly influence calorie expenditure and selects the best-performing predictive algorithm for fitness planning and performance tracking.
 
 The dataset, sourced from Kaggle’s [Calories Burnt Prediction](https://www.kaggle.com/datasets/ruchikakumbhar/calories-burnt-prediction/data) collection, provides the foundation for training a predictive system that supports personalised fitness insights and healthier lifestyle decisions.
+
+[Watch the Demo](Streamlit%20App%20Demo.mp4)
 
 # Dataset Description
  - Shape: 15000 rows, 7 columns
@@ -58,7 +63,7 @@ To further improve model performance, I applied GridSearchCV to the top two mode
 Gradient Boosting achieved lower MAE and RMSE values with better generalisation, demonstrating superior performance and robustness.
 **Final Model Selection:** Tuned Gradient Boosting
 
-# Interpretation
+# Model Interpretation
 To interpret how features influenced calorie predictions, two complementary explainability methods were applied — Permutation Importance and SHAP (SHapley Additive Explanations).
 These methods were used on the final Gradient Boosting model, the best-performing estimator after hyperparameter tuning.
 
@@ -73,13 +78,6 @@ These methods were used on the final Gradient Boosting model, the best-performin
 | **Body_Temp**  |    0.00005 |
     
 **Interpretation:** Workout Duration and Heart Rate dominate calorie prediction. Physiological attributes (BMI, Age, Gender) contribute marginally.
-
-# Live Demo
-Deployed on Render
-🔗 - [Calorie Expenditure Predictor App](https://calorie-expenditure-predictor-app.onrender.com/)
-
-# Demo Video
-[Watch the Demo](Streamlit%20App%20Demo.mp4)
 
 # Future Improvements
 - Deploy advanced models (Polynomial Regression, Neural Networks).
