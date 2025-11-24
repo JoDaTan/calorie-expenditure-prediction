@@ -1,7 +1,9 @@
 # Calorie Expenditure Prediction
-This project aims to predict the number of calories burned during a workout session based on physiological and activity-related features such as: Age, Height, Weight, Duration, Heart Rate and Body Temperature. 
-<br>It uses a machine learning model to understand which factors most influence calorie expenditure and determine the best performing  predictive model for fitness planning and performance tracking.</br>
-<br>The dataset, sourced from Kaggle's [Calories Burnt Prediction](https://www.kaggle.com/datasets/ruchikakumbhar/calories-burnt-prediction/data) collection, provides the foundation for training a predictive system that can support personalised fitness insights and healthier lifestyle decisions.</br>
+This project predicts the number of calories burned during a workout session using physiological and activity-related features such as Age, Height, Weight, Duration, Heart Rate, and Body Temperature.
+
+By leveraging machine learning models, the system identifies which factors most strongly influence calorie expenditure and selects the best-performing predictive algorithm for fitness planning and performance tracking.
+
+The dataset, sourced from Kaggle’s [Calories Burnt Prediction](https://www.kaggle.com/datasets/ruchikakumbhar/calories-burnt-prediction/data) collection, provides the foundation for training a predictive system that supports personalised fitness insights and healthier lifestyle decisions.
 
 # Dataset Description
  - Shape: 15000 rows, 7 columns
@@ -17,34 +19,32 @@ This project aims to predict the number of calories burned during a workout sess
   - Target
     - Calories
 
-# Insights from Exploratory Data Analysis
-- The dataset contains 15,000 workout sessions from adults aged 20 to 79, with participants averaging 174 cm in height, 75 kg in weight, and a heart rate of about 96 bpm; workouts last around 15.5 minutes on average, resulting in approximately 90 calories burned per session, with some variability and a few extreme height and weight values suggesting potential outliers.
-- Heart rate, duration and body temperature show strong positive correlation with calories burned.
-- Weight and Height show strong correlation (0.958)
-- Males are slightly taller and heavier than females.
+# Exploratory Data Analysis (EDA) Insights
+- Average participant: 174 cm, 75 kg, 96 bpm, 15.5 min workout, ~90 kcal burned.
+- Strong correlations: Duration, Heart Rate, Body Temperature with Calories.
+- Height & Weight correlation: 0.958 → engineered BMI feature.
+- Gender differences: Males are slightly taller/heavier.
+- Outliers in height/weight detected.
 
-# Feature Engineering
-Due to strong multicollinearity between Height and Weight (0.958), I created the composite feature `bmi = (Weight / Height (m) ** 2)`
-
-# Feature Selection & Pre-modelling Data Prep
-  - Selected Features:
-      -  X = Age, Gender, Duration, Heart_Rate, Body_Temp, bmi
-      -  y = Calories
-  - Drop identifier `User_ID`
-  - OneHotEncoding `Gender` as numeric
-  - Standscale the numeric features; Age, Duration, Heart_Rate, Body_Temp, bmi
+# Feature Engineering and Selection
+- Created `bmi = (Weight / Height (m) ** 2)`
+- Selected Features:
+   -  X = Age, Gender, Duration, Heart_Rate, Body_Temp, bmi
+   -  y = Calories
+- Drop identifier `User_ID`
+- OneHotEncoding `Gender` as numeric
+- Standscale the numeric features; Age, Duration, Heart_Rate, Body_Temp, bmi
 
 # Modelling - Training, Evaluation and Selection
-To determine the best predictive algorithm, multiple regression models were trained:
 
-  | Model                  | Metrics (MAE - RMSE - R²) | Remark                                     |
-  | ---------------------- | ------------------------- | ------------------------------------------ |
-  | **Ridge Regression**   | 8.460 - 11.597 - 0.966    | Model with regularization                             |
-  | **Linear Regression**  | 8.460 - 11.597 - 0.966    | Baseline model |
-  | **Decision Tree**      | 3.964 - 6.003 - 0.991     | Improved accuracy with slight overfitting  |
-  | **K Nearest Neighbor** | 4.237 - 5.842 - 0.991     | Improved accuracy                          |
-  | **Gradient Boosting**  | 3.228 - 4.474 - 0.995     | Best generalizing model                    |
-  | **Random Forest**      | 2.562 - 3.856 - 0.996     | Best predictive accuracy                   |
+| Model                  | Metrics (MAE - RMSE - R²) | Remark                                     |
+| ---------------------- | ------------------------- | ------------------------------------------ |
+| **Ridge Regression**   | 8.460 - 11.597 - 0.966    | Model with regularization                             |
+| **Linear Regression**  | 8.460 - 11.597 - 0.966    | Baseline model |
+| **Decision Tree**      | 3.964 - 6.003 - 0.991     | Improved accuracy with slight overfitting  |
+| **K Nearest Neighbor** | 4.237 - 5.842 - 0.991     | Improved accuracy                          |
+| **Gradient Boosting**  | 3.228 - 4.474 - 0.995     | Best generalizing model                    |
+| **Random Forest**      | 2.562 - 3.856 - 0.996     | Best predictive accuracy                   |
 
 **Selected Models:** Random Forest Regressor and Gradient Boosting
 
@@ -72,10 +72,15 @@ These methods were used on the final Gradient Boosting model, the best-performin
 | **BMI**        |     0.0016 |
 | **Body_Temp**  |    0.00005 |
     
-**Interpretation:** The permutation importance analysis from the tuned Gradient Boosting model reveals that Workout Duration is by far the most influential factor determining calorie expenditure, followed by Heart Rate. Together, these two variables account for nearly all the model’s explanatory power.
-Physiological attributes such as BMI, Age, and Gender contribute marginally, indicating that workout behavior and exertion level dominate over body characteristics in calorie prediction.
-This is also consistent with the result from SHAP analysis.
+**Interpretation:** Workout Duration and Heart Rate dominate calorie prediction. Physiological attributes (BMI, Age, Gender) contribute marginally.
+
+# Live Demo
+Deployed on Render
+🔗 - [Calorie Expenditure Predictor App](https://calorie-expenditure-predictor-app.onrender.com/)
+
+# Demo Video
+[Watch the Demo](Streamlit%20App%20Demo.mp4)
 
 # Future Improvements
-- Deploy web app for real-time calorie prediction using user input
-- try out polynomial regression or Neural Networks for complex interactions.
+- Deploy advanced models (Polynomial Regression, Neural Networks).
+- Improve UI with interactive charts & personalised recommendations.
